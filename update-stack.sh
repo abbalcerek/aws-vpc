@@ -1,8 +1,11 @@
 #!/bin/bash
 
-. stack.env
+set -o allexport
+source stack.env
+set +o allexport
 
-aws --profile priv --region us-east-2 \
-  cloudformation update-stack \
+aws cloudformation update-stack \
   --stack-name ${stack_name} \
   --template-body file://stack.yaml 
+
+echo "it is safe to exit script now. wating for stack to be updated"

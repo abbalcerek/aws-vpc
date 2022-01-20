@@ -1,17 +1,13 @@
 #!/bin/bash
 
-. stack.env
+set -o allexport
+source stack.env
+set +o allexport
 
-# stack_id=$(aws --profile priv --region us-east-2 \
-#   cloudformation describe-stacks \
-#   --stack-name ${stack_name} | jq .Stacks[0].StackId)
-
-# echo $stack_id
-
-aws --profile priv --region us-east-2 \
-  cloudformation delete-stack \
+aws cloudformation delete-stack \
   --stack-name ${stack_name}
 
-aws --profile priv --region us-east-2 \
-  cloudformation wait stack-delete-complete \
+echo "it is safe to exit script now. wating for stack to be removed"
+
+aws cloudformation wait stack-delete-complete \
   --stack-name ${stack_name}

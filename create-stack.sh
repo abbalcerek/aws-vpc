@@ -1,16 +1,15 @@
 #/bin/bash
 
-. stack.env
+set -o allexport
+source stack.env
+set +o allexport
 
-aws --profile priv --region us-east-2 \
-  cloudformation describe-stacks \
+aws cloudformation describe-stacks \
   --stack-name ${stack_name} || \
 echo creating stack: && \
-aws --profile priv --region us-east-2 \
-  cloudformation create-stack \
+aws cloudformation create-stack \
   --stack-name ${stack_name} \
   --template-body file://stack.yaml
 
-aws --profile priv --region us-east-2 \
-  cloudformation wait stack-exists \
+aws cloudformation wait stack-exists \
   --stack-name ${stack_name}
