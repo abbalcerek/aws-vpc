@@ -1,5 +1,3 @@
-# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html
-
 ---
 
 AWSTemplateFormatVersion: "2010-09-09"
@@ -19,6 +17,10 @@ Parameters:
     Description: cidr for subnet A
     Type: String
     Default: "198.19.2.0/24"
+ 
+  KeyPairName:
+    Description: key pair for ec2 instances
+    Type: String
 
 Resources:
   VPC:
@@ -33,12 +35,43 @@ Resources:
         - Key: version
           Value: 2
 
+  GlobalInternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: GlobalInternetGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref GlobalInternetGateway
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: VPC
+      InternetGatewayId:
+        Ref: GlobalInternetGateway
+
   SubnetA:
     Type: AWS::EC2::Subnet
     Properties:
       AvailabilityZone: us-east-2a
       VpcId: !Ref VPC
       CidrBlock: !Ref SubnetACidr
+      MapPublicIpOnLaunch: true
+
+  SubnetARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetA
+      RouteTableId: !Ref PublicRouteTable
   
   SubnetB:
     Type: AWS::EC2::Subnet
@@ -53,3 +86,4 @@ Resources:
       ImageId: "ami-03a0c45ebc70f98ea"
       InstanceType: "t2.micro"
       SubnetId: !Ref SubnetA
+      KeyName: !Ref KeyPairName
