@@ -1,0 +1,55 @@
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html
+
+---
+
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  VpcCidr: 
+    Description: cidr for vpc
+    Type: String
+    Default: "198.19.0.0/16"
+
+  SubnetACidr:
+    Description: cidr for subnet A
+    Type: String
+    Default: "198.19.1.0/24"
+
+  SubnetBCidr:
+    Description: cidr for subnet A
+    Type: String
+    Default: "198.19.2.0/24"
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties: 
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      Tags: 
+        - Key: project
+          Value: aws-vpc
+        - Key: version
+          Value: 2
+
+  SubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-2a
+      VpcId: !Ref VPC
+      CidrBlock: !Ref SubnetACidr
+  
+  SubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-2b
+      VpcId: !Ref VPC
+      CidrBlock: !Ref SubnetBCidr 
+
+  EC2InstanceA1: 
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: "ami-03a0c45ebc70f98ea"
+      InstanceType: "t2.micro"
+      SubnetId: !Ref SubnetA
