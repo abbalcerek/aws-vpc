@@ -9,9 +9,6 @@ rm -f ${key_pair_name}.pem
 aws ec2 delete-key-pair \
   --key-name ${key_pair_name}
 
-aws ec2 delete-key-pair \
-  --key-name test
-
 aws ec2 create-key-pair \
   --key-name ${key_pair_name} \
   --query 'KeyMaterial' \
