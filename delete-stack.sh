@@ -4,6 +4,11 @@ set -o allexport
 source stack.env
 set +o allexport
 
+rm -f ${key_pair_name}.pem
+
+aws ec2 delete-key-pair \
+  --key-name ${key-pair-name}
+
 aws cloudformation delete-stack \
   --stack-name ${stack_name}
 
